@@ -12,12 +12,12 @@ RUN yum -y install postgresql-server
 RUN yum -y install postgresql-contrib
 
 # Postgresql version
-ENV PG_VERSION 9.4
-ENV PGVERSION 94
+ENV PG_VERSION 8.4
+ENV PGVERSION 84
 
 # Set the environment variables
 ENV HOME /var/lib/pgsql
-ENV PGDATA /var/lib/pgsql/9.4/data
+ENV PGDATA /var/lib/pgsql/data
 
 # Install postgresql and run InitDB
 # RUN rpm -vih https://download.postgresql.org/pub/repos/yum/$PG_VERSION/redhat/rhel-7-x86_64/pgdg-centos$PGVERSION-$PG_VERSION-2.noarch.rpm && \
@@ -42,8 +42,15 @@ WORKDIR /var/lib/pgsql
 RUN /sbin/service postgresql initdb
 RUN /sbin/chkconfig postgresql on
 
+# COPY data/postgresql.conf /var/lib/pgsql/$PG_VERSION/data/postgresql.conf
+
+RUN mkdir -p /var/lib/pgsql/$PG_VERSION/data && \
+    chown -R postgres:postgres $PGDATA && \
+    chown -R postgres:postgres $PGDATA/
+
 # Change own user
- RUN chown -R postgres:postgres /var/lib/pgsql/data/*      
+# RUN mkdir -p /var/lib/pgsql/$PG_VERSION/data && \
+#     chown -R postgres:postgres /var/lib/pgsql/$PG_VERSION/data/*     
 #     chmod +x /usr/local/bin/postgresql.sh
 
 # Set volume
@@ -60,11 +67,14 @@ VOLUME ["/var/lib/pgsql"]
 # configuration).
 # Start it up
 
-RUN service postgresql start || echo 'error'
+RUN service postgresql start || cat /var/lib/pgsql/pgstartup.log
 
 # Set username
 USER postgres
 
+# RUN chmod u=rwx,g-rwx,o-rwx /var/lib/pgsql/$PG_VERSION/data
+
+# RUN echo $PG_VERSION > "/var/lib/pgsql/$PG_VERSION/data/PG_VERSION"
 # Run PostgreSQL Server
 # CMD ["/bin/bash", "/usr/local/bin/postgresql.sh"]
     
