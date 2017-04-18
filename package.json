@@ -9,6 +9,7 @@
         "docker-stop": "docker stop fabric.nlp || echo 'no container to stop'",
         "docker-remove": "docker rm fabric.nlp || echo 'no container to remove'",
         "docker": "npm run docker-stop && npm run docker-remove && npm run docker-build && docker run -d -p 8080:8080 --name fabric.nlp fabric.nlp",
+        "docker-interactive": "npm run docker-stop && npm run docker-remove && npm run docker-build && docker run -it -p 8080:8080 --name fabric.nlp fabric.nlp /bin/bash",
         "docker-publish": "docker build -t imranq2/fabric.nlp . && docker push imranq2/fabric.nlp"
     },
     "repository": {
